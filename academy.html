@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advance Nail Course by The Nail Art Shop by Pratibha Sharma. Professional nail art training program.">
+    <title>Academy | The Nail Art Shop by Pratibha Sharma</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="stylesheet" href="css/style.css">
+
+    <meta name="keywords" content="luxury nail art, Pratibha Sharma, The Nail Art Shop, Jaipur nail extensions, best nail artist India, bridal nails, home service nail art, nail art academy, nail course">
+    <meta property="og:title" content="Academy | The Nail Art Shop | by Pratibha Sharma">
+    <meta property="og:description" content="Advance Nail Course by The Nail Art Shop by Pratibha Sharma. Professional nail art training program.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pratibhanails.com/academy.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        .academy-hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            text-align: center;
+        }
+        .academy-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .academy-hero-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .course-overview {
+            padding: 80px 0;
+            background-color: #fff;
+            text-align: center;
+        }
+        .course-overview p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .topic-card {
+            background: #fffaf7;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .topic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+        }
+        .topic-icon {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .pricing-section {
+            padding: 80px 0;
+            background: #fdf5f6;
+            text-align: center;
+        }
+        .pricing-card {
+            background: #fff;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .pricing-badge {
+            position: absolute;
+            top: 25px;
+            right: -40px;
+            background: #d4af37;
+            color: #fff;
+            padding: 8px 45px;
+            transform: rotate(45deg);
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .original-price {
+            font-size: 1.5rem;
+            color: #999;
+            text-decoration: line-through;
+            margin-bottom: 10px;
+        }
+        .offer-price {
+            font-size: 4rem;
+            font-family: 'Playfair Display', serif;
+            color: #222;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        .enroll-btn {
+            background: #d4af37;
+            color: #fff;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+            text-decoration: none;
+        }
+        .enroll-btn:hover {
+            background: #c19b2e;
+            transform: translateY(-2px);
+            color: #fff;
+        }
+        .contact-section {
+            padding: 80px 0;
+            background: #fff;
+            text-align: center;
+        }
+        .contact-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+            text-decoration: none;
+        }
+        .btn-whatsapp:hover {
+            background: #128C7E;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .btn-phone {
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+        .btn-phone:hover {
+            background: #000;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .duration-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .academy-hero-title {
+                font-size: 2.5rem;
+            }
+            .offer-price {
+                font-size: 3rem;
+            }
+            .pricing-badge {
+                right: -45px;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
+</head>
+<body>
+    
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-title">The Nail Art Shop</span>
+                <span class="logo-subtitle">by Pratibha Sharma</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="services.html">Services</a>
+                <a href="portfolio.html">Portfolio</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="academy.html" class="active">Academy</a>
+                <a href="booking.html">Booking</a>
+                <a href="reviews.html">Reviews</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="nav-actions">
+                <a href="booking.html" class="btn btn-primary d-none-mobile">Book Now</a>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="academy-hero slide-up">
+            <div class="container">
+                <div class="badge mb-2">The Nail Art Shop by Pratibha</div>
+                <h1 class="academy-hero-title fade-in delay-1">Advance Nail Course</h1>
+                <p class="academy-hero-subtitle fade-in delay-2">Master the Art of Luxury Nails</p>
+                <div class="duration-badge fade-in delay-3"><i class="far fa-clock"></i> 7 Days Intensive Class</div>
+            </div>
+        </section>
+
+        <section class="course-overview slide-up">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Course Overview</h2>
+                </div>
+                <p>A Professional Beauty Training program designed for beginners and beginners. This course provides hands-on training and industry-level skills in Nails, Lashes, and Permanent Makeup.</p>
+                
+                <div class="topics-grid">
+                    <div class="topic-card fade-in">
+                        <div class="topic-icon"><i class="fas fa-microscope"></i></div>
+                        <div class="topic-title">Nail Anatomy</div>
+                    </div>
+                    <div class="topic-card fade-in delay-1">
+                        <div class="topic-icon"><i class="fas fa-pump-soap"></i></div>
+                        <div class="topic-title">Product Knowledge</div>
+                    </div>
+                    <div class="topic-card fade-in delay-2">
+                        <div class="topic-icon"><i class="fas fa-paint-brush"></i></div>
+                        <div class="topic-title">Gel Polish Application</div>
+                    </div>
+                    <div class="topic-card fade-in delay-3">
+                        <div class="topic-icon"><i class="fas fa-hand-sparkles"></i></div>
+                        <div class="topic-title">Gel Extension</div>
+                    </div>
+                    <div class="topic-card fade-in">
+                        <div class="topic-icon"><i class="far fa-hand-pointer"></i></div>
+                        <div class="topic-title">Temporary Nail Extension</div>
+                    </div>
+                    <div class="topic-card fade-in delay-1">
+                        <div class="topic-icon"><i class="fas fa-magic"></i></div>
+                        <div class="topic-title">Acrylic Extension</div>
+                    </div>
+                    <div class="topic-card fade-in delay-2">
+                        <div class="topic-icon"><i class="fas fa-palette"></i></div>
+                        <div class="topic-title">All kinds of Nail Art</div>
+                    </div>
+                    <div class="topic-card fade-in delay-3">
+                        <div class="topic-icon"><i class="fas fa-eraser"></i></div>
+                        <div class="topic-title">Removal</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-section slide-up">
+            <div class="container">
+                <div class="pricing-card fade-in">
+                    <div class="pricing-badge">50% OFF Special Deal</div>
+                    <h3 class="mb-3">Course Investment</h3>
+                    <div class="original-price">₹29,999</div>
+                    <div class="offer-price">₹14,999</div>
+                    <a href="https://wa.me/917889123473?text=Hi%2C%20I%20want%20to%20enroll%20in%20the%20Advance%20Nail%20Course!" class="enroll-btn" target="_blank">Enroll Now</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section slide-up">
+            <div class="container">
+                <h2 class="section-title">Ready to Start Your Journey?</h2>
+                <p>Have questions? Reach out to us directly and we'll guide you through the enrollment process.</p>
+                <div class="contact-actions">
+                    <a href="https://wa.me/917889123473?text=Hi%2C%20I%20want%20to%20know%20more%20about%20the%20Advance%20Nail%20Course" class="btn-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp text-xl"></i> Chat on WhatsApp
+                    </a>
+                    <a href="tel:07889123473" class="btn-phone">
+                        <i class="fas fa-phone-alt"></i> 7889123473
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col brand-col">
+                <h3 class="logo-title">The Nail Art Shop</h3>
+                <p>India's Most Celebrated Beauty Artist. Luxury studio offering Nails, Hair Extensions, Permanent Makeup, and Skin Care for clients, brides, and celebrities.</p>
+                <div class="social-links">
+                    <a href="https://instagram.com/pratibhanails" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/917889123473" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="academy.html">Academy</a></li>
+                    <li><a href="booking.html">Booking</a></li>
+                    <li><a href="reviews.html">Reviews</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="terms.html">Terms & Conditions</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <ul class="contact-info">
+                    <li><i class="fas fa-map-marker-alt"></i> <span>Shop S-19, 2nd Floor, Near Burger King, Amrapali Circle, Vaishali Nagar, Jaipur</span></li>
+                    <li><i class="fas fa-phone"></i> <span>+91 788 912 3473</span></li>
+                    <li><i class="fas fa-envelope"></i> <span>Pratibhanails@gmail.com</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 The Nail Art Shop by Pratibha Sharma. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <a href="https://wa.me/917889123473?text=Hi%2C%20I%20would%20like%20to%20book%20an%20appointment" class="floating-whatsapp" target="_blank" aria-label="Book on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <script src="js/main.js" defer></script>
+
+</body>
+</html>

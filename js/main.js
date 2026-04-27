@@ -31,28 +31,103 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Filtering
+    // Pagination, Lazy Loading & Filtering
     const filterBtns = document.querySelectorAll('.filter-btn');
-    const filterItems = document.querySelectorAll('.filter-item');
-    if (filterBtns.length > 0 && filterItems.length > 0) {
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const filterValue = btn.getAttribute('data-filter');
-                filterItems.forEach(item => {
-                    if (filterValue === 'all' || item.classList.contains(filterValue) || item.getAttribute('data-category') === filterValue) {
-                        item.style.display = '';
-                        setTimeout(() => { item.style.opacity = '1'; item.style.transform = 'scale(1)'; }, 50);
-                    } else {
+    const grids = document.querySelectorAll('.gallery-grid, .masonry-grid, .instagram-grid');
+    
+    grids.forEach(grid => {
+        const items = Array.from(grid.querySelectorAll('.gallery-item, .masonry-item, .insta-item'));
+        if (items.length === 0) return;
+        
+        let currentFilter = 'all';
+        let visibleCount = 0;
+        const batchSize = 5;
+        let scrollObserver = null;
+        
+        const loadMore = () => {
+            const matchingItems = items.filter(item => 
+                currentFilter === 'all' || item.classList.contains(currentFilter) || item.getAttribute('data-category') === currentFilter
+            );
+            
+            const toShow = matchingItems.slice(visibleCount, visibleCount + batchSize);
+            
+            toShow.forEach(item => {
+                item.style.display = '';
+                
+                // Lazy load media using data-src
+                const media = item.querySelectorAll('img, video');
+                media.forEach(m => {
+                    if (m.hasAttribute('data-src')) {
+                        m.src = m.getAttribute('data-src');
+                        m.removeAttribute('data-src');
+                    }
+                });
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'scale(1)';
+                }, 50);
+            });
+            
+            visibleCount += toShow.length;
+            
+            if (toShow.length > 0) {
+                // Observe the 2nd to last item shown in this batch to trigger next batch
+                const triggerIndex = Math.max(0, toShow.length - 2);
+                const triggerItem = toShow[triggerIndex];
+                
+                if (scrollObserver) scrollObserver.disconnect();
+                
+                scrollObserver = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) {
+                        scrollObserver.disconnect();
+                        loadMore();
+                    }
+                }, { rootMargin: "300px" });
+                
+                scrollObserver.observe(triggerItem);
+            }
+        };
+        
+        // Hide all initially
+        items.forEach(item => {
+            item.style.display = 'none';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+        });
+        
+        // Initial load
+        loadMore();
+        
+        // Filter logic scoped to the page
+        if (filterBtns.length > 0) {
+            filterBtns.forEach(btn => {
+                // Remove old event listeners if any, by redefining them (only safe if this code runs once)
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('active')) return;
+                    
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.getAttribute('data-filter');
+                    
+                    if (scrollObserver) scrollObserver.disconnect();
+                    
+                    // Hide all current items
+                    items.forEach(item => {
                         item.style.opacity = '0';
                         item.style.transform = 'scale(0.8)';
                         setTimeout(() => { item.style.display = 'none'; }, 300);
-                    }
+                    });
+                    
+                    // Reset and load next batch for new filter
+                    setTimeout(() => {
+                        visibleCount = 0;
+                        loadMore();
+                    }, 350);
                 });
             });
-        });
-    }
+        }
+    });
 
     // Scroll Animations
     const appearOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
@@ -116,17 +191,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.querySelector('body');
     const lightbox = document.createElement('div');
     lightbox.className = 'lightbox';
-    lightbox.innerHTML = '<span class="lightbox-close">&times;</span><img src="" alt="Enlarged view">';
+    lightbox.innerHTML = '<span class="lightbox-close">&times;</span><div class="lightbox-content-container"></div>';
     body.appendChild(lightbox);
     
-    const lightboxImg = lightbox.querySelector('img');
+    const lightboxContainer = lightbox.querySelector('.lightbox-content-container');
     const lightboxClose = lightbox.querySelector('.lightbox-close');
     
+    // Add click event for images
     document.querySelectorAll('img:not([alt="Celebrity styled nails"]):not(.no-lightbox)').forEach(img => {
         img.style.cursor = 'zoom-in';
         img.addEventListener('click', (e) => {
             e.preventDefault();
-            lightboxImg.src = img.src;
+            lightboxContainer.innerHTML = `<img src="${img.src}" alt="Enlarged view">`;
+            lightbox.classList.add('active');
+            body.style.overflow = 'hidden';
+        });
+    });
+
+    // Add click event for videos to open in lightbox
+    document.querySelectorAll('video').forEach(vid => {
+        vid.style.cursor = 'zoom-in';
+        vid.addEventListener('click', (e) => {
+            e.preventDefault();
+            lightboxContainer.innerHTML = `<video src="${vid.src}" autoplay playsinline style="max-height: 90vh; max-width: 90vw; outline: none;"></video>`;
+            const lbVideo = lightboxContainer.querySelector('video');
+            lbVideo.addEventListener('click', () => {
+                if(lbVideo.paused) lbVideo.play();
+                else lbVideo.pause();
+            });
             lightbox.classList.add('active');
             body.style.overflow = 'hidden';
         });
@@ -135,12 +227,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeLightbox = () => {
         lightbox.classList.remove('active');
         body.style.overflow = '';
+        lightboxContainer.innerHTML = ''; // Stop video
     };
     
     lightbox.addEventListener('click', (e) => {
-        if(e.target === lightbox || e.target === lightboxClose) closeLightbox();
+        if(e.target === lightbox || e.target === lightboxClose || e.target === lightboxContainer) closeLightbox();
     });
     document.addEventListener('keydown', (e) => {
         if(e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+    });
+
+    // Video Scroll Observer
+    const videoOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5 // Play when 50% of the video is visible
+    };
+    
+    const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+                video.play().catch(e => console.log('Autoplay prevented:', e));
+            } else {
+                video.pause();
+            }
+        });
+    }, videoOptions);
+    
+    document.querySelectorAll('video').forEach(video => {
+        // Remove standard autoplay from HTML so JS can control it strictly based on viewport
+        video.removeAttribute('autoplay');
+        videoObserver.observe(video);
+    });
+
+    // Mobile Viewport Interaction for Image Overlays
+    if (window.matchMedia("(max-width: 991px)").matches) {
+        const centerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-center');
+                } else {
+                    entry.target.classList.remove('is-center');
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: "-40% 0px -40% 0px", // Trigger only when in the middle 20% of the viewport height
+            threshold: 0
+        });
+
+        document.querySelectorAll('.gallery-item, .masonry-item').forEach(el => {
+            centerObserver.observe(el);
+        });
+    }
+
+    // Global Fallback for Broken Images
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', function() {
+            if (!this.classList.contains('fallback-applied')) {
+                this.classList.add('fallback-applied');
+                // Use a styled placeholder that matches the brand colors (bg: blush pink, text: burgundy)
+                this.src = 'https://placehold.co/600x600/f4e1e1/800020?text=The+Nail+Art+Shop';
+                this.alt = 'Image temporarily unavailable';
+                this.style.objectFit = 'contain';
+                this.style.padding = '20px';
+                this.style.backgroundColor = '#fbf5f5';
+            }
+        });
     });
 });
