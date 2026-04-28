@@ -197,42 +197,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxContainer = lightbox.querySelector('.lightbox-content-container');
     const lightboxClose = lightbox.querySelector('.lightbox-close');
     
-    // Add click event for images
-    document.querySelectorAll('img:not([alt="Celebrity styled nails"]):not(.no-lightbox)').forEach(img => {
-        img.style.cursor = 'zoom-in';
-        img.addEventListener('click', (e) => {
-            e.preventDefault();
-            lightboxContainer.innerHTML = `<img src="${img.src}" alt="Enlarged view">`;
-            lightbox.classList.add('active');
-            body.style.overflow = 'hidden';
-        });
-    });
+    // Global Click Listener for Images & Videos (Event Delegation)
+    document.addEventListener('click', (e) => {
+        // Find if we clicked an img/video OR a container that has one
+        let target = e.target.closest('img, video, .masonry-item, .gallery-item, .service-card, .service-card-detailed');
+        if (!target) return;
 
-    // Add click event for videos to open in lightbox
-    document.querySelectorAll('video').forEach(vid => {
-        vid.style.cursor = 'zoom-in';
-        vid.addEventListener('click', (e) => {
-            e.preventDefault();
-            lightboxContainer.innerHTML = `<video src="${vid.src}" autoplay playsinline style="max-height: 90vh; max-width: 90vw; outline: none;"></video>`;
-            const lbVideo = lightboxContainer.querySelector('video');
-            lbVideo.addEventListener('click', () => {
-                if(lbVideo.paused) lbVideo.play();
-                else lbVideo.pause();
-            });
+        // If we clicked a container, find the image or video inside it
+        let media = target;
+        if (target.tagName !== 'IMG' && target.tagName !== 'VIDEO') {
+            media = target.querySelector('img, video');
+        }
+
+        if (!media || media.classList.contains('no-lightbox')) return;
+        
+        const isCelebrity = media.getAttribute('alt') === 'Celebrity styled nails';
+        if (isCelebrity) return;
+
+        // If it's a link or button, don't open lightbox (unless it's specifically meant for it)
+        if (e.target.closest('a, button') && !e.target.closest('.masonry-overlay')) {
+            return; 
+        }
+
+        e.preventDefault();
+        lightboxContainer.innerHTML = ''; // Clear previous
+            
+            if (media.tagName === 'IMG') {
+                const fullImg = document.createElement('img');
+                // Use data-src for high quality if available, fallback to src
+                const source = media.getAttribute('data-src') || media.src;
+                fullImg.src = source;
+                fullImg.alt = media.alt || 'Enlarged view';
+                
+                // Fallback for broken images in lightbox
+                fullImg.onerror = function() {
+                    this.src = 'https://placehold.co/1200x800/f4e1e1/800020?text=Image+Unavailable';
+                    this.style.objectFit = 'contain';
+                };
+                
+                lightboxContainer.appendChild(fullImg);
+            } else if (media.tagName === 'VIDEO') {
+                const fullVideo = document.createElement('video');
+                fullVideo.src = media.src;
+                fullVideo.autoplay = true;
+                fullVideo.controls = true;
+                fullVideo.playsInline = true;
+                fullVideo.style.maxHeight = '90vh';
+                fullVideo.style.maxWidth = '90vw';
+                
+                lightboxContainer.appendChild(fullVideo);
+            }
+            
             lightbox.classList.add('active');
             body.style.overflow = 'hidden';
-        });
     });
     
     const closeLightbox = () => {
         lightbox.classList.remove('active');
         body.style.overflow = '';
-        lightboxContainer.innerHTML = ''; // Stop video
+        lightboxContainer.innerHTML = '';
     };
     
     lightbox.addEventListener('click', (e) => {
         if(e.target === lightbox || e.target === lightboxClose || e.target === lightboxContainer) closeLightbox();
     });
+    
     document.addEventListener('keydown', (e) => {
         if(e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
     });
@@ -292,8 +321,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.alt = 'Image temporarily unavailable';
                 this.style.objectFit = 'contain';
                 this.style.padding = '20px';
-                this.style.backgroundColor = '#fbf5f5';
             }
         });
     });
+
+    // Academy Carousel Navigation (Infinite Loop)
+    const academyCarousel = document.getElementById('academyCarousel');
+    const academyPrev = document.getElementById('academyPrev');
+    const academyNext = document.getElementById('academyNext');
+
+    if (academyCarousel && academyPrev && academyNext) {
+        // Infinite Scroll Setup: Clone items
+        const cards = Array.from(academyCarousel.querySelectorAll('.academy-card'));
+        cards.forEach(card => {
+            const cloneBefore = card.cloneNode(true);
+            const cloneAfter = card.cloneNode(true);
+            academyCarousel.insertBefore(cloneBefore, academyCarousel.firstChild);
+            academyCarousel.appendChild(cloneAfter);
+        });
+
+        // Initial scroll to the middle set
+        const scrollAmount = () => {
+            const card = academyCarousel.querySelector('.academy-card');
+            return card ? card.offsetWidth + 25 : 320;
+        };
+        
+        const centerCarousel = () => {
+            academyCarousel.scrollLeft = academyCarousel.scrollWidth / 3;
+        };
+
+        window.addEventListener('load', centerCarousel);
+        setTimeout(centerCarousel, 500);
+
+        const handleScroll = (direction) => {
+            const step = scrollAmount();
+            const targetScroll = direction === 'next' 
+                ? academyCarousel.scrollLeft + step 
+                : academyCarousel.scrollLeft - step;
+            
+            academyCarousel.scrollTo({
+                left: targetScroll,
+                behavior: 'smooth'
+            });
+        };
+
+        academyPrev.onclick = (e) => { e.preventDefault(); handleScroll('prev'); };
+        academyNext.onclick = (e) => { e.preventDefault(); handleScroll('next'); };
+
+        const checkInfinite = () => {
+            const totalWidth = academyCarousel.scrollWidth;
+            const viewWidth = academyCarousel.clientWidth;
+            const scrollLeft = academyCarousel.scrollLeft;
+
+            // Jump back to middle if we go too far
+            if (scrollLeft <= 5) {
+                academyCarousel.scrollTo({ left: totalWidth / 3, behavior: 'auto' });
+            } else if (scrollLeft + viewWidth >= totalWidth - 5) {
+                academyCarousel.scrollTo({ left: (totalWidth / 3) - viewWidth + (totalWidth / 3), behavior: 'auto' });
+                // Simplified jump:
+                academyCarousel.scrollLeft = totalWidth / 3;
+            }
+        };
+
+        academyCarousel.addEventListener('scroll', checkInfinite);
+    }
 });
