@@ -4,9 +4,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.getElementById('navLinks');
     
     if (mobileMenuToggle) {
+        mobileMenuToggle.setAttribute('aria-expanded', 'false');
         mobileMenuToggle.addEventListener('click', () => {
-            mobileMenuToggle.classList.toggle('active');
+            const isActive = mobileMenuToggle.classList.toggle('active');
             navLinks.classList.toggle('active');
+            mobileMenuToggle.setAttribute('aria-expanded', isActive);
+            document.body.style.overflow = isActive ? 'hidden' : '';
+        });
+        
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navLinks.classList.contains('active')) {
+                    mobileMenuToggle.click();
+                }
+            });
         });
     }
 
@@ -169,21 +180,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.fade-in, .stats-container').forEach(el => appearOnScroll.observe(el));
     
-    // Form processing
-    const bookingForm = document.getElementById('bookingForm');
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', (e) => {
+    // Form processing for WhatsApp
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const btn = bookingForm.querySelector('button[type="submit"]');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            const btn = contactForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Redirecting...';
             btn.disabled = true;
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+            
+            const whatsappNumber = "917889123473";
+            const text = `Hi Pratibha,\n\nI have a new inquiry:\n\n*Name:* ${name}\n*Email:* ${email}\n*Phone:* ${phone}\n*Message:* ${message}`;
+            const encodedText = encodeURIComponent(text);
+            
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
+            
             setTimeout(() => {
-                bookingForm.reset();
-                btn.innerHTML = 'Submit Request';
+                window.open(whatsappUrl, '_blank');
+                contactForm.reset();
+                btn.innerHTML = originalText;
                 btn.disabled = false;
-                document.getElementById('formStatus').classList.remove('d-none');
-                setTimeout(() => document.getElementById('formStatus').classList.add('d-none'), 5000);
-            }, 1500);
+            }, 800);
         });
     }
 
@@ -191,71 +214,108 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.querySelector('body');
     const lightbox = document.createElement('div');
     lightbox.className = 'lightbox';
-    lightbox.innerHTML = '<span class="lightbox-close">&times;</span><div class="lightbox-content-container"></div>';
+    lightbox.innerHTML = `
+        <span class="lightbox-close" aria-label="Close Lightbox" role="button">&times;</span>
+        <button class="lightbox-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+        <button class="lightbox-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+        <div class="lightbox-content-container"></div>
+    `;
     body.appendChild(lightbox);
     
     const lightboxContainer = lightbox.querySelector('.lightbox-content-container');
     const lightboxClose = lightbox.querySelector('.lightbox-close');
+    const lightboxPrev = lightbox.querySelector('.lightbox-prev');
+    const lightboxNext = lightbox.querySelector('.lightbox-next');
     
-    // Global Click Listener for Images & Videos (Event Delegation)
+    let currentGalleryGroup = [];
+    let currentLightboxIndex = -1;
+
+    const renderLightboxMedia = (index) => {
+        lightboxContainer.innerHTML = '';
+        if (index < 0 || index >= currentGalleryGroup.length) return;
+        
+        const media = currentGalleryGroup[index];
+        
+        lightboxPrev.style.display = index > 0 ? 'flex' : 'none';
+        lightboxNext.style.display = index < currentGalleryGroup.length - 1 ? 'flex' : 'none';
+        
+        if (media.tagName === 'IMG') {
+            const fullImg = document.createElement('img');
+            const source = media.getAttribute('data-src') || media.src;
+            fullImg.src = source;
+            fullImg.alt = media.alt || 'Enlarged view';
+            fullImg.onerror = function() {
+                this.src = 'https://placehold.co/1200x800/f4e1e1/800020?text=Image+Unavailable';
+                this.style.objectFit = 'contain';
+            };
+            lightboxContainer.appendChild(fullImg);
+        } else if (media.tagName === 'VIDEO') {
+            const fullVideo = document.createElement('video');
+            fullVideo.src = media.src;
+            fullVideo.autoplay = true;
+            fullVideo.controls = true;
+            fullVideo.playsInline = true;
+            fullVideo.style.maxHeight = '90vh';
+            fullVideo.style.maxWidth = '90vw';
+            lightboxContainer.appendChild(fullVideo);
+        }
+    };
+
+    lightboxPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentLightboxIndex > 0) {
+            currentLightboxIndex--;
+            renderLightboxMedia(currentLightboxIndex);
+        }
+    });
+
+    lightboxNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentLightboxIndex < currentGalleryGroup.length - 1) {
+            currentLightboxIndex++;
+            renderLightboxMedia(currentLightboxIndex);
+        }
+    });
+    
     document.addEventListener('click', (e) => {
-        // Find if we clicked an img/video OR a container that has one
         let target = e.target.closest('img, video, .masonry-item, .gallery-item, .service-card, .service-card-detailed');
         if (!target) return;
 
-        // If we clicked a container, find the image or video inside it
         let media = target;
         if (target.tagName !== 'IMG' && target.tagName !== 'VIDEO') {
             media = target.querySelector('img, video');
         }
 
         if (!media || media.classList.contains('no-lightbox')) return;
-        
-        const isCelebrity = media.getAttribute('alt') === 'Celebrity styled nails';
-        if (isCelebrity) return;
-
-        // If it's a link or button, don't open lightbox (unless it's specifically meant for it)
-        if (e.target.closest('a, button') && !e.target.closest('.masonry-overlay')) {
-            return; 
-        }
+        if (media.getAttribute('alt') === 'Celebrity styled nails') return;
+        if (e.target.closest('a, button') && !e.target.closest('.masonry-overlay')) return;
 
         e.preventDefault();
-        lightboxContainer.innerHTML = ''; // Clear previous
-            
-            if (media.tagName === 'IMG') {
-                const fullImg = document.createElement('img');
-                // Use data-src for high quality if available, fallback to src
-                const source = media.getAttribute('data-src') || media.src;
-                fullImg.src = source;
-                fullImg.alt = media.alt || 'Enlarged view';
-                
-                // Fallback for broken images in lightbox
-                fullImg.onerror = function() {
-                    this.src = 'https://placehold.co/1200x800/f4e1e1/800020?text=Image+Unavailable';
-                    this.style.objectFit = 'contain';
-                };
-                
-                lightboxContainer.appendChild(fullImg);
-            } else if (media.tagName === 'VIDEO') {
-                const fullVideo = document.createElement('video');
-                fullVideo.src = media.src;
-                fullVideo.autoplay = true;
-                fullVideo.controls = true;
-                fullVideo.playsInline = true;
-                fullVideo.style.maxHeight = '90vh';
-                fullVideo.style.maxWidth = '90vw';
-                
-                lightboxContainer.appendChild(fullVideo);
-            }
-            
-            lightbox.classList.add('active');
-            body.style.overflow = 'hidden';
+        
+        const container = media.closest('.gallery-grid, .masonry-grid, .instagram-grid, section');
+        if (container) {
+            currentGalleryGroup = Array.from(container.querySelectorAll('img:not(.no-lightbox), video:not(.no-lightbox)')).filter(m => m.getAttribute('alt') !== 'Celebrity styled nails');
+        } else {
+            currentGalleryGroup = [media];
+        }
+        
+        currentLightboxIndex = currentGalleryGroup.indexOf(media);
+        if (currentLightboxIndex === -1) {
+            currentGalleryGroup = [media];
+            currentLightboxIndex = 0;
+        }
+        
+        renderLightboxMedia(currentLightboxIndex);
+        lightbox.classList.add('active');
+        body.style.overflow = 'hidden';
     });
     
     const closeLightbox = () => {
         lightbox.classList.remove('active');
         body.style.overflow = '';
         lightboxContainer.innerHTML = '';
+        currentGalleryGroup = [];
+        currentLightboxIndex = -1;
     };
     
     lightbox.addEventListener('click', (e) => {
@@ -263,7 +323,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     document.addEventListener('keydown', (e) => {
-        if(e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft' && currentLightboxIndex > 0) {
+            currentLightboxIndex--;
+            renderLightboxMedia(currentLightboxIndex);
+        }
+        if (e.key === 'ArrowRight' && currentLightboxIndex < currentGalleryGroup.length - 1) {
+            currentLightboxIndex++;
+            renderLightboxMedia(currentLightboxIndex);
+        }
     });
 
     // Video Scroll Observer
