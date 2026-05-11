@@ -1,0 +1,21 @@
+{
+  "name": "The Nail Art Shop By Pratibha Sharma",
+  "short_name": "Nail Art Shop",
+  "description": "Luxury beauty studio in Jaipur. Offering premium Nails, Hair Extensions, Permanent Makeup, Hydra Facial, and Skin Care treatments.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c19a6b",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dz3ixer7i/image/upload/v1777385620/remove-photos-background-removed_vrqcuz.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://res.cloudinary.com/dz3ixer7i/image/upload/v1777385620/remove-photos-background-removed_vrqcuz.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

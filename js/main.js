@@ -454,4 +454,190 @@ document.addEventListener('DOMContentLoaded', () => {
 
         academyCarousel.addEventListener('scroll', checkInfinite);
     }
+
+    // Custom Cursor
+    if (window.matchMedia("(pointer: fine)").matches) {
+        const cursorDot = document.createElement('div');
+        cursorDot.classList.add('cursor-dot');
+        const cursorOutline = document.createElement('div');
+        cursorOutline.classList.add('cursor-outline');
+        document.body.appendChild(cursorDot);
+        document.body.appendChild(cursorOutline);
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let dotX = mouseX;
+        let dotY = mouseY;
+        let outlineX = mouseX;
+        let outlineY = mouseY;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            // Immediate update for dot for responsiveness
+            cursorDot.style.transform = `translate(calc(${mouseX}px - 50%), calc(${mouseY}px - 50%))`;
+        });
+
+        const animateCursor = () => {
+            // Smooth follow for outline
+            outlineX += (mouseX - outlineX) * 0.15;
+            outlineY += (mouseY - outlineY) * 0.15;
+            cursorOutline.style.transform = `translate(calc(${outlineX}px - 50%), calc(${outlineY}px - 50%))`;
+            requestAnimationFrame(animateCursor);
+        };
+        requestAnimationFrame(animateCursor);
+
+        // Add hover effect to interactive elements
+        const addHoverEffects = () => {
+            document.querySelectorAll('a, button, input, textarea, .gallery-item, .service-card, .academy-card').forEach(el => {
+                if (!el.dataset.cursorAttached) {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+                    el.dataset.cursorAttached = 'true';
+                }
+            });
+        };
+        
+        addHoverEffects();
+        
+        // Re-apply if DOM changes (e.g., lazy loading)
+        const observer = new MutationObserver((mutations) => {
+            addHoverEffects();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // Back to Top Button
+    const backToTopBtn = document.createElement('button');
+    backToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    backToTopBtn.className = 'back-to-top';
+    backToTopBtn.setAttribute('aria-label', 'Back to top');
+    document.body.appendChild(backToTopBtn);
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+    }, { passive: true });
+
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // 31. Reading Progress Bar
+    const progressBar = document.createElement('div');
+    progressBar.id = 'progress-bar';
+    document.body.appendChild(progressBar);
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + '%';
+    }, { passive: true });
+
+    // 33. Offline Toast
+    const offlineToast = document.createElement('div');
+    offlineToast.id = 'offline-toast';
+    offlineToast.innerHTML = '<i class="fas fa-wifi-slash"></i> You are currently offline.';
+    document.body.appendChild(offlineToast);
+    window.addEventListener('offline', () => offlineToast.classList.add('show'));
+    window.addEventListener('online', () => {
+        offlineToast.innerHTML = '<i class="fas fa-wifi"></i> Back online!';
+        offlineToast.style.background = '#25d366';
+        setTimeout(() => {
+            offlineToast.classList.remove('show');
+            setTimeout(() => {
+                offlineToast.innerHTML = '<i class="fas fa-wifi-slash"></i> You are currently offline.';
+                offlineToast.style.background = '#800020';
+            }, 400);
+        }, 3000);
+    });
+
+    // 94. Promo Announcement Bar
+    if (!localStorage.getItem('promo-closed')) {
+        const promoBar = document.createElement('div');
+        promoBar.id = 'promo-bar';
+        promoBar.className = 'active';
+        promoBar.innerHTML = '✨ Special Offer: Get 20% off Bridal Packages this month! <span class="close-promo">&times;</span>';
+        document.body.insertBefore(promoBar, document.body.firstChild);
+        promoBar.querySelector('.close-promo').addEventListener('click', () => {
+            promoBar.classList.remove('active');
+            localStorage.setItem('promo-closed', 'true');
+        });
+    }
+
+    // 5. Magnetic Buttons
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'translate(0px, 0px)';
+        });
+    });
+
+    // 14. 3D Image Tilt (Vanilla Implementation)
+    document.querySelectorAll('.gallery-item, .service-card, .pricing-card').forEach(item => {
+        item.addEventListener('mousemove', (e) => {
+            const rect = item.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xPct = x / rect.width - 0.5;
+            const yPct = y / rect.height - 0.5;
+            item.style.transform = `perspective(1000px) rotateY(${xPct * 10}deg) rotateX(${-yPct * 10}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        item.addEventListener('mouseleave', () => {
+            item.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)';
+        });
+    });
+
+    // 20. Text Highlighting Observer
+    const highlightObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('appear');
+            }
+        });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.highlight').forEach(el => highlightObserver.observe(el));
+
+    // 16. Expandable Text
+    document.querySelectorAll('.expandable-text').forEach(el => {
+        if (el.scrollHeight > 120) {
+            const btn = document.createElement('button');
+            btn.className = 'read-more-btn';
+            btn.innerText = 'Read More';
+            el.parentNode.insertBefore(btn, el.nextSibling);
+            btn.addEventListener('click', () => {
+                el.classList.toggle('expanded');
+                btn.innerText = el.classList.contains('expanded') ? 'Read Less' : 'Read More';
+            });
+        }
+    });
+
+    // 9. Interactive Particles (Hero Section)
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = Math.random() * 5 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.background = 'rgba(255, 255, 255, 0.4)';
+            particle.style.borderRadius = '50%';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.pointerEvents = 'none';
+            particle.style.animation = `particle-float ${Math.random() * 10 + 10}s linear infinite`;
+            heroSection.appendChild(particle);
+        }
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes particle-float { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }`;
+        document.head.appendChild(style);
+    }
 });

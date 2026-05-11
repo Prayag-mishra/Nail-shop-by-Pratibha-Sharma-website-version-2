@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" width="500" height="150">
+    <rect width="100%" height="100%" fill="transparent"/>
+    <text x="50%" y="45%" font-family="Playfair Display, serif" font-size="42" fill="#000000" font-weight="bold" text-anchor="middle" dominant-baseline="middle">
+        The Nail Art Shop
+    </text>
+    <text x="50%" y="75%" font-family="DM Sans, sans-serif" font-size="20" fill="#666666" text-anchor="middle" dominant-baseline="middle">
+        By <tspan fill="#000000" font-weight="bold">Pratibha Sharma</tspan><tspan font-size="12">™</tspan>
+    </text>
+</svg>
