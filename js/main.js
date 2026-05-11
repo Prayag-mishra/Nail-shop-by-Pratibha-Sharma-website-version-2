@@ -568,33 +568,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. Magnetic Buttons
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
-        });
-        btn.addEventListener('mouseleave', () => {
-            btn.style.transform = 'translate(0px, 0px)';
-        });
-    });
+    // 5. Magnetic Buttons (Removed to fix click bugs)
 
-    // 14. 3D Image Tilt (Vanilla Implementation)
-    document.querySelectorAll('.gallery-item, .service-card, .pricing-card').forEach(item => {
-        item.addEventListener('mousemove', (e) => {
-            const rect = item.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const xPct = x / rect.width - 0.5;
-            const yPct = y / rect.height - 0.5;
-            item.style.transform = `perspective(1000px) rotateY(${xPct * 10}deg) rotateX(${-yPct * 10}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
-        item.addEventListener('mouseleave', () => {
-            item.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)';
-        });
-    });
+    // 14. 3D Image Tilt (Removed to fix click bugs)
 
     // 20. Text Highlighting Observer
     const highlightObserver = new IntersectionObserver((entries) => {
